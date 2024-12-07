@@ -3,13 +3,51 @@ import (
     "errors"
     "gorm.io/gorm"
     "reflect"
+    "gorm.io/driver/mysql"
+    "fmt"
+    "time"
 )
+type GormConfig struct {
+    User string
+    Passwd string
+    Host string
+    Port int
+    Dbcharset string
+    MaxIdleConns int
+    MaxOpenConns int
+    MaxConnLifeTime int
+    DBName string
+}
 type DBOperation struct {
 	DB *gorm.DB
 }
 
-func NewDBOperation(db *gorm.DB) *DBOperation {
-	return &DBOperation{DB: db}
+func NewDBOperation(conf *GormConfig) (*DBOperation,error) {
+    dsn := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=%v&parseTime=True&loc=Local",
+        conf.User,
+        conf.Passwd,
+        conf.Host,
+        conf.Port,
+        conf.DBName,
+        conf.Dbcharset,
+        )
+    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+        DisableForeignKeyConstraintWhenMigrating: true,
+        SkipDefaultTransaction: true,
+        DisableAutomaticPing: true,
+        Logger: NewGormLogger(),
+    })
+    if err != nil {
+        return nil,err
+    }
+    sqlDB, err := db.DB()
+	if err != nil {
+		return nil,err
+	}
+    sqlDB.SetMaxIdleConns(conf.MaxIdleConns)
+    sqlDB.SetMaxOpenConns(conf.MaxOpenConns)
+    sqlDB.SetConnMaxLifetime(time.Second * time.Duration(conf.MaxConnLifeTime))
+    return &DBOperation{DB:db},nil
 }
 
 // Create 通用插入数据
