@@ -1,3 +1,4 @@
+CREATE DATABASE `user_info` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `en_name` varchar(256) NOT NULL DEFAULT '' COMMENT '英文名称',
