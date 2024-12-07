@@ -1,14 +1,17 @@
 # database
 gorm mysql general lib
 
-## 开始使用
+# 官方文档
+https://gorm.io/zh_CN/docs/generic_interface.html
+# 开始使用
 
-下载database
+## 下载database
 
 ```SQL
  go get github.com/aldenygq/database
 ```
 
+## 实现逻辑
 ```Go
 package main
 import (
@@ -53,7 +56,7 @@ func main() {
 }
 
 ```
-控制台输出：
+## 控制台输出：
 
 ```Go
 Database connected successfully
@@ -61,7 +64,7 @@ rows:11
 delete success%
 ```
 
-日志输出
+## 日志输出
 ```
 time="2024-12-07 19:58:02" level=info msg="Execute SQL: UPDATE `users` SET `status`=1 WHERE en_name = 'summer', rows affected: 11, duration: 11.040208ms"
 time="2024-12-07 20:23:24" level=info msg="Execute SQL: UPDATE `users` SET `status`=2 WHERE en_name = 'summer', rows affected: 11, duration: 17.329792ms"
