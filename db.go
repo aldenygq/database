@@ -105,7 +105,7 @@ func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...int
         return false, result.Error
     }
     if result.RowsAffected == 0 {
-        return false,errors.New("record not exist")
+        return false,nil
     }
     return true, nil
 }
