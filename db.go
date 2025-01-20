@@ -143,7 +143,29 @@ func (d *DBOperation) QueryList(table,order string,page,pagesize int,value,query
     }
     return count,nil
 }
+//查询所有数据
+func (d *DBOperation) QueryAll(table,order string,value,query interface{},args ...interface{}) (int64,error) {
 
+    var count int64
+    if value == nil {
+        return count,errors.New("out not be null")
+    }
+    if reflect.ValueOf(value).Kind() != reflect.Pointer {
+        return count,errors.New("value must be a pointer")
+    }
+    db :=  d.DB.Table(table).Where(query,args...)
+    //排序
+    if order != "" {
+        db  = db.Order(order)
+    }
+    //总数
+    db = db.Count(&count)
+   //查询
+   if err := db.Find(value).Error; err != nil {
+        return count,err
+    }
+    return count,nil
+}
 //删除数据
 func (d *DBOperation) DeleteRow(table string,value,query interface{},args ...interface{}) (int64,error) {
     var count int64
