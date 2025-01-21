@@ -93,20 +93,23 @@ func (d *DBOperation) CreateInBatches(table string,value interface{},batchSize i
 }
 
 //获取单条数据,默认正序第一条
-func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...interface{}) (int,error)     {
-    var count int
+func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...interface{}) (bool,error)     {
     if value == nil {
-        return count,errors.New("out not be null")
+        return false,errors.New("out not be null")
     }
     if reflect.ValueOf(value).Kind() != reflect.Pointer {
-       return count,errors.New("value must be a pointer")
+       return false,errors.New("value must be a pointer")
      }
     result := d.DB.Table(table).Where(query,args...).First(&value)
-     if result.Error != nil {
-        return count, result.Error
+     if errors.Is(result.Error, gorm.ErrRecordNotFound){
+        return false, nil
+     } else {
+	return false.err 
      }
-    count = result.RowsAffected
-    return count, nil
+     if result.RowsAffected == 0 {
+	return false, nil	
+     }
+    return true, nil
 }
 
 //分页查询数据列表
