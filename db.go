@@ -104,7 +104,7 @@ func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...int
      if errors.Is(result.Error, gorm.ErrRecordNotFound){
         return false, nil
      } else {
-	return false.err 
+	return false,err 
      }
      if result.RowsAffected == 0 {
 	return false, nil	
