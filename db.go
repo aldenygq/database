@@ -101,12 +101,11 @@ func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...int
        return false,errors.New("value must be a pointer")
      }
     result := d.DB.Table(table).Where(query,args...).First(&value)
-     if result.Error != nil {
-     	return false,result.Error 
-     }
-     if result.RowsAffected == 0 {
-	return false, nil	
-     }
+    if result.Error == gorm.ErrRecordNotFound {
+	    return false,nil 
+    }else {
+    	return false,result.Error
+    }
     return true, nil
 }
 
