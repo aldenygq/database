@@ -102,9 +102,9 @@ func (d *DBOperation) QueryRow(table string,value,query interface{}, args ...int
      }
     result := d.DB.Table(table).Where(query,args...).First(&value)
     if result.Error == gorm.ErrRecordNotFound {
-	    return false,nil 
-    }else {
-    	return false,result.Error
+	    return false,nil
+    }else if result.Error != nil  {
+        return false,result.Error
     }
     return true, nil
 }
