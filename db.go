@@ -31,6 +31,7 @@ type DBOperation interface {
 	DeleteRow(table string, value, query interface{}, args ...interface{}) (int64, error)
 	UpdateRow(table string, value, query interface{}, args ...interface{}) (int64, error)
 	Close() error
+	DB() *gorm.DB
 }
 
 type dbOperation struct {
@@ -98,6 +99,15 @@ func NewDBOperation(conf *GormConfig) (DBOperation, error) {
 	sqlDB.SetConnMaxLifetime(time.Second * time.Duration(conf.MaxConnLifeTime))
 	return &dbOperation{db: client}, nil
 }
+
+// DB 返回底层的 *gorm.DB 实例
+func (d *dbOperation) DB() *gorm.DB {
+    if d.db == nil {		
+        return nil
+    }
+    return d.db
+}
+
 // Close 关闭数据库连接
 func (d *dbOperation) Close() error {
 	if d.db == nil {
