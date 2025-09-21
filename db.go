@@ -30,7 +30,7 @@ type DBOperation interface {
 	QueryAll(table, order string, value, query interface{}, args ...interface{}) (int64, error)
 	DeleteRow(table string, value, query interface{}, args ...interface{}) (int64, error)
 	UpdateRow(table string, value, query interface{}, args ...interface{}) (int64, error)
-	DB() (*sql.DB, error) // 新增获取底层 sql.DB 的方法
+	Close() error
 }
 
 type dbOperation struct {
@@ -97,6 +97,19 @@ func NewDBOperation(conf *GormConfig) (DBOperation, error) {
 	sqlDB.SetMaxOpenConns(conf.MaxOpenConns)
 	sqlDB.SetConnMaxLifetime(time.Second * time.Duration(conf.MaxConnLifeTime))
 	return &dbOperation{db: client}, nil
+}
+// Close 关闭数据库连接
+func (d *dbOperation) Close() error {
+	if d.db == nil {
+		return errors.New("database connection is nil")
+	}
+	
+	sqlDB, err := d.db.DB()
+	if err != nil {
+		return fmt.Errorf("failed to get underlying sql.DB: %v", err)
+	}
+	
+	return sqlDB.Close()
 }
 
 // Create 通用插入数据
