@@ -30,6 +30,7 @@ type DBOperation interface {
 	QueryAll(table, order string, value, query interface{}, args ...interface{}) (int64, error)
 	DeleteRow(table string, value, query interface{}, args ...interface{}) (int64, error)
 	UpdateRow(table string, value, query interface{}, args ...interface{}) (int64, error)
+	DB() (*sql.DB, error) // 新增获取底层 sql.DB 的方法
 }
 
 type dbOperation struct {
