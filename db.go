@@ -46,23 +46,23 @@ func NewDBOperation(conf *GormConfig) (DBOperation, error) {
 		conf.Dbcharset,
 	)
 	// 使用sql包直接连接（不通过ORM，因为此时数据库可能还不存在）
-	db, err := sql.Open("mysql", dsnWithoutDB)
+	dd, err := sql.Open("mysql", dsnWithoutDB)
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
+	defer dd.Close()
 
 	// 2. 检查数据库是否存在
 	var dbExists bool
 	checkQuery := fmt.Sprintf("SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '%s'", conf.DBName)
-	err = db.QueryRow(checkQuery).Scan(&dbExists)
+	err = dd.QueryRow(checkQuery).Scan(&dbExists)
 	if err != nil {
 		return nil, err
 	}
 	// 3. 如果数据库不存在则创建
 	if !dbExists {
 		createQuery := fmt.Sprintf("CREATE DATABASE `%s` DEFAULT CHARACTER SET %s COLLATE %s_unicode_ci", conf.DBName, conf.Dbcharset, conf.Dbcharset)
-		_, err := db.Exec(createQuery)
+		_, err := dd.Exec(createQuery)
 		if err != nil {
 			return nil, err
 		}
